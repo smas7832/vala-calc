@@ -33,6 +33,17 @@ public class Hello: Gtk.Application  {
 		}
 		return result;
 	}
+
+	Gtk.Button make_button(string label, Operation Arithmetic){
+		var butt = new Gtk.Button.with_label(label);
+		butt.clicked.connect(()=>{
+			op = Arithmetic;
+			input_buff = input;
+			input = 0;
+		});
+		return butt;
+    }
+
 	public override void activate(){
 
 		var Grid = new Gtk.Grid();
@@ -56,7 +67,7 @@ public class Hello: Gtk.Application  {
 				});
 
 				counter++;
-				Grid.attach(btn, col,row);
+				Grid.attach(btn, col, row+1);
 			}
 		}
 
@@ -71,7 +82,7 @@ public class Hello: Gtk.Application  {
 		equal_button.clicked.connect(()=>{
 			if( input == 0 | input_buff == 0){
 				output_display.set_text("ERROR!");
-			}else{
+			} else {
 				int result = equaliser(input_buff, input);
 				output_display.set_text(result.to_string());
 				operation_display.set_text("=");
@@ -81,57 +92,36 @@ public class Hello: Gtk.Application  {
 			}
 		});
 
-		var sum_button = new Gtk.Button.with_label("+");
-		sum_button.clicked.connect(()=>{
-			op = SUM;
-			operation_display.set_text("+");
-			input_buff = input;
-			input = 0;
-		});
+		var sum_button = make_button("+", SUM);
+		var sub_button = make_button("-", SUB);
+		var mul_button = make_button("*", MUL);
+		var div_button = make_button("/", DIV);
 
-		var sub_button = new Gtk.Button.with_label("-");
-		sub_button.clicked.connect(()=>{
-			op = SUB;
-			operation_display.set_text("-");
-			input_buff = input;
-			input = 0;
-		});
-
-		var mul_button = new Gtk.Button.with_label("*");
-		mul_button.clicked.connect(()=>{
-			op = MUL;
-			operation_display.set_text("*");
-			input_buff = input;
-			input = 0;
-		});
-
-		var div_button = new Gtk.Button.with_label("/");
-		div_button.clicked.connect(() => {
-			op = DIV;
-			operation_display.set_text("/");
-			input_buff = input;
-			input = 0;
-		});
-		
-		var clear_button = new Gtk.Button.with_label("X");
+		var clear_button = new Gtk.Button.with_label("C");
 		clear_button.clicked.connect(()=>{
-			output_display.set_text("CLEAR MEM!");
+			input = (int)(input / 10);
 			operation_display.set_markup("");
+			output_display.set_text(input.to_string());
+		});
+		var all_clear_button = new Gtk.Button.with_label("CA");
+		all_clear_button.clicked.connect(()=>{
 			input = 0;
-			input_buff =0;
+			input_buff = 0;
 			op = NULL;
+			operation_display.set_markup("");
+			output_display.set_text(input.to_string());
 		});
 
-
-		Grid.attach(output_display,1,0 , 2 );
-		Grid.attach(operation_display,0,0 , 1);
-		Grid.attach(equal_button, 2, 4);
-		Grid.attach(sum_button, 3, 4);
-		Grid.attach(sub_button, 3, 3);
-		Grid.attach(mul_button, 3, 2);
-		Grid.attach(div_button, 3, 1);
-		Grid.attach(clear_button, 3, 0);
-		Grid.attach(zero_button, 1, 4);
+		Grid.attach(output_display, 	1, 0 , 2 );
+		Grid.attach(operation_display,	0, 0 , 1);
+		Grid.attach(equal_button, 		2, 1);
+		Grid.attach(sum_button, 		3, 4);
+		Grid.attach(sub_button, 		3, 3);
+		Grid.attach(mul_button, 		3, 2);
+		Grid.attach(div_button, 		3, 1);
+		Grid.attach(clear_button, 		3, 0);
+		Grid.attach(all_clear_button, 	0, 1);
+		Grid.attach(zero_button, 		1, 1);
 
 
 		var win = new Gtk.ApplicationWindow(this){
@@ -152,11 +142,10 @@ public class Hello: Gtk.Application  {
 		});
 		
 		var app_title = new Gtk.Label("Calculator");
-		
+
 		var app_header = new Gtk.HeaderBar();		
 		app_header.set_title_widget(app_title);
 		app_header.pack_start(about_button);
-
 
 		win.set_titlebar(app_header);
 		win.set_halign(5);
